@@ -48,13 +48,15 @@ class Car:
         self._is_engine_started=False
     
     def accelerate(self):
-        if self._is_engine_started==True:
-            if self._current_speed+self._acceleration>=self._max_speed:
-                self._current_speed=self._max_speed
-            else:   
-                self._current_speed+=self._acceleration
-        else:
+        if not self._is_engine_started:
             print('Start the engine to accelerate')
+            return
+        
+        if self._current_speed+self._acceleration>=self._max_speed:
+                self._current_speed=self._max_speed
+        else:   
+                self._current_speed+=self._acceleration
+            
 
     def apply_brakes(self):
         if self._current_speed>=self._tyre_friction:
