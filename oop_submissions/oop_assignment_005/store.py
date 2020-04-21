@@ -1,8 +1,6 @@
 class Item:
     def __init__(self,name,price,category):
-        if price==0:
-            raise ValueError('Invalid value for price, got 0')
-        elif price<0:
+        if price<=0:
             raise ValueError(f'Invalid value for price, got {price}')
         self._price=price
         if not isinstance(name,str):
@@ -30,8 +28,8 @@ class Item:
 class Query:
     def __init__(self,field,operation,value):
         self._field=field
-        self._ops=['IN','EQ','GT','GTE','LT','LTE','STARTS_WITH','ENDS_WITH','CONTAINS']
-        if operation not in self._ops:
+        ops=['IN','EQ','GT','GTE','LT','LTE','STARTS_WITH','ENDS_WITH','CONTAINS']
+        if operation not in ops:
             raise ValueError('Invalid value for operation, got random')
         self._operation=operation
         self._value=value
@@ -47,118 +45,80 @@ class Query:
     @property
     def value(self):
         return self._value
-    
+        
     def __str__(self):
         return f'{self._field} {self._operation} {self._value}'
         
 class Store:
-    
-    sub_store=[]
-    
     def __init__(self):
         self.store=[]
     
     def add_item(self,item):
         self.store.append(item)
 
-        
     def __str__(self):
         things='\n'.join(map(str,self.store))
         if len(things)==0:
             return('No items')
-        return things
-        
+        return things     
+    
+    @staticmethod
+    def output(operation,operand1,operand2):
+        if operation == "IN" or operation=="EQ":
+            if not isinstance(operand2,list):
+                operand2=[operand2]
+            
+            if operand1 in operand2:
+                return True
+                        
+        elif operation=="STARTS_WITH" or operation=="ENDS_WITH" or operation=="CONTAINS":
+            if operand2 in operand1:
+                return True
+            
+        elif operation=="LT":
+            if operand1<operand2:
+                return True
+                    
+        elif operation=="GT":
+            if operand1>operand2:
+                return True
+                    
+        elif operation=="LTE":
+            if operand1<=operand2:
+                return True
+                    
+        elif operation=="GTE":
+            if operand1>=operand2:
+                return True
+                
     def filter(self,query):
         filter_store=Store()
-        self._result=[]
         for item in self.store:
-            if query._field=="category":
-                if query._operation=="IN":
-                    for value in query._value:
-                        if item._category==value:
-                            self._result.append(item)
+            if query.field=="category":
+                if self.output(query._operation,item._category,query._value):
+                    filter_store.add_item(item)
                             
-                elif query._operation=="EQ":
-                    if item._category==query._value:
-                        self._result.append(item)
-                
-                elif query._operation=="STARTS_WITH":
-                    if item._category.startswith(query._value):
-                        self._result.append(item)
-                        
-                elif query._operation=="ENDS_WITH":
-                    if item._category.endswith(query._value):
-                        self._result.append(item)
-                        
-                elif query._operation=="CONTAINS":
-                    if query._value in item._category:
-                        self._result.append(item)
-                
-            elif query._field=="price":
-                if query._operation=="LT":
-                    if item._price<query._value:
-                        self._result.append(item)
-                elif query._operation=="GT":
-                    if item._price>query._value:
-                        self._result.append(item)
-                elif query._operation=="LTE":
-                    if item._price<=query._value:
-                        self._result.append(item)
-                elif query._operation=="GTE":
-                    if item._price>=query._value:
-                        self._result.append(item)
-                        
-                elif query._operation=="EQ":
-                    if item._price==query._value:
-                        self._result.append(item)
-                
-                elif query._operation=="IN":
-                    for value in query._value:
-                        if item._price==value:
-                            self._result.append(item)
-                
-                    
-            elif query._field=="name":
-                if query._operation=="IN":
-                    for value in query._value:
-                        if item._name==value:
-                            self._result.append(item)
+            elif query.field=="price":
+                if self.output(query._operation,item._price,query._value):
+                    filter_store.add_item(item)
                             
-                elif query._operation=="STARTS_WITH":
-                    if item._name.startswith(query._value):
-                        self._result.append(item)
-                        
-                elif query._operation=="ENDS_WITH":
-                    if item._name.endswith(query._value):
-                        self._result.append(item)
-                        
-                elif query._operation=="EQ":
-                    if item._name==query._value:
-                        self._result.append(item)
-                        
-                elif query._operation=="CONTAINS":
-                    if query._value in item._name:
-                        self._result.append(item)
+            elif query.field=="name":
+                if self.output(query._operation,item._name,query._value):
+                    filter_store.add_item(item)
                     
-        for i in range(len(self._result)):
-            filter_store.add_item(self._result[i])
-            
-        things='\n'.join(map(str,self._result))
-        self.sub_store=things.split('\n')
-            
         return filter_store
-
+                
     def exclude(self,query):
         exclude_store=Store()
-        self.filter(query)
-        things='\n'.join(map(str,self.store))
-        total_store=things.split('\n')
+        things='\n'.join(map(str,self.filter(query).store))
+        sub_store=things.split('\n') 
+        total_store=map(str,self.store)
         for item in total_store:
-            if not item in self.sub_store:
+            if not item in sub_store:
                 exclude_store.add_item(item)
-                
+            
         return exclude_store
         
     def count(self):
         return len(self.store)
-    
+      
