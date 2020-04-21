@@ -1,6 +1,7 @@
+from math import sqrt,pow
 class ComplexNumber:
     def __init__(self,real=0,imag=0):
-        if isinstance(real,str) and isinstance(imag,str):
+        if isinstance(real,str) and isinstance(imag,str):   # it is same as type(real)==str and type(imag)==str
             raise ValueError('Invalid value for real and imaginary part')
             
         if isinstance(real,str):
@@ -40,26 +41,18 @@ class ComplexNumber:
         imag=(self._real_part*other._imaginary_part)+(self._imaginary_part*other._real_part)
         return __class__(real,imag)
         
-    # Formula for complex number division is ((a/k)+(b/k)i)*((x/k)+(y/k)i), where k is absolute value
-    
     def __truediv__(self,other):
-        if other._real_part==0 and other._imaginary_part==0:
+        if (other._real_part==0) and (other._imaginary_part==0):
             raise ZeroDivisionError('division by zero')
-        r1=self._real_part/abs(other)           # a/k
-        r2=self._imaginary_part/abs(other)      # b/k
-        i1=other._real_part/abs(other)          # c/k
-        i2=other._imaginary_part/abs(other)     # y/k
-        real=r1*i1+r2*i2
-        imag=r1*-i2+r2*i1
-        return __class__(round(real,2),round(imag,2))
+        num=self.__mul__(other.conjugate())
+        den=pow(other._real_part,2)+pow(other._imaginary_part,2)
+        real=num._real_part/den
+        imag=num._imaginary_part/den
+        return __class__(real,imag)
         
     def __abs__(self):
-        return round((self._real_part**2+self._imaginary_part**2)**0.5,3)
+        return round(sqrt(pow(self._real_part,2)+pow(self._imaginary_part,2)),3)
         
         
     def __eq__(self,other):
-        if self._real_part==other._real_part and self._imaginary_part==other._imaginary_part:
-            return True
-        return False
-
-        
+        return (self._real_part==other._real_part) and (self._imaginary_part==other._imaginary_part)
