@@ -86,8 +86,17 @@ class Store:
         elif operation=="GTE" and operand1>=operand2:
             return True
                 
-    @staticmethod
-    def intersection(values):
+    def intersection(self,argv,query_type):
+        values=[]
+        for query in argv:
+            if query_type=="filter_query":
+                a=self.filter(query).store
+            else:
+                a=self.exclude(query).store
+                
+            filter='\n'.join(map(str,a)).split('\n')
+            values.append(set(filter))
+                
         and_operation_filter=Store()
         a=values[0]
         for item in values:
@@ -115,18 +124,12 @@ class Store:
                 return filter_store
             
         else:
-            values=[]
-            for query in argv:
-                filter='\n'.join(map(str,self.filter(query).store)).split('\n')
-                values.append(set(filter)) 
-                
-            return self.intersection(values)
+            
+            return self.intersection(argv,"filter_query")
             
     def __add__(self,other):
-        filter_1='\n'.join(map(str,self.store)).split('\n')
-        filter_2='\n'.join(map(str,other.store)).split('\n')
-        filter_1=set(filter_1)
-        filter_2=set(filter_2)
+        filter_1={'\n'.join(map(str,self.store))}
+        filter_2={'\n'.join(map(str,other.store))}
         filter_3=Store()
         union=filter_1|filter_2
         union=sorted(union)
@@ -146,12 +149,7 @@ class Store:
                 return exclude_store
             
         else:
-            values=[]
-            for query in argv:
-                filter='\n'.join(map(str,self.exclude(query).store)).split('\n')
-                values.append(set(filter))  
-                
-            return self.intersection(values)
+            return self.intersection(argv,"exclude_query")
         
     def count(self):
         return len(self.store)
