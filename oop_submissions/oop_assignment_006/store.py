@@ -66,7 +66,7 @@ class Store:
         if operation == "IN" or operation=="EQ":
             if not isinstance(operand2,list):
                 operand2=[operand2]
-            
+             
             if operand1 in operand2:
                 return True
                         
@@ -85,6 +85,18 @@ class Store:
                     
         elif operation=="GTE" and operand1>=operand2:
             return True
+                
+    @staticmethod
+    def intersection(values):
+        and_operation_filter=Store()
+        a=values[0]
+        for item in values:
+            a=a&item
+                
+        for item in a:
+            and_operation_filter.add_item(item)
+            
+        return and_operation_filter
                 
     def filter(self,*argv):
         if len(argv)==1:
@@ -106,18 +118,10 @@ class Store:
             values=[]
             for query in argv:
                 filter='\n'.join(map(str,self.filter(query).store)).split('\n')
-                values.append(set(filter))        
-            
-            and_operation_filter=Store()
-            a=values[0]
-            for item in values:
-                a=a&item
+                values.append(set(filter)) 
                 
-            for item in a:
-                and_operation_filter.add_item(item)
+            return self.intersection(values)
             
-            return and_operation_filter
-        
     def __add__(self,other):
         filter_1='\n'.join(map(str,self.store)).split('\n')
         filter_2='\n'.join(map(str,other.store)).split('\n')
@@ -145,19 +149,10 @@ class Store:
             values=[]
             for query in argv:
                 filter='\n'.join(map(str,self.exclude(query).store)).split('\n')
-                values.append(set(filter))        
-            
-            and_operation=Store()
-            a=values[0]
-            for item in values:
-                a=a&item
+                values.append(set(filter))  
                 
-            for item in a:
-                and_operation.add_item(item)
-            
-            return and_operation
+            return self.intersection(values)
         
     def count(self):
         return len(self.store)
-      
       
