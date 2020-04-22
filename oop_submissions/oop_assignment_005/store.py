@@ -60,7 +60,7 @@ class Store:
         things='\n'.join(map(str,self.store))
         if len(things)==0:
             return('No items')
-        return things     
+        return things
     
     @staticmethod
     def output(operation,operand1,operand2):
@@ -71,54 +71,43 @@ class Store:
             if operand1 in operand2:
                 return True
                         
-        elif operation=="STARTS_WITH" or operation=="ENDS_WITH" or operation=="CONTAINS":
+        elif operation=="STARTS_WITH" or operation=="ENDS_WITH" or operation=="CONTAINS" :
             if operand2 in operand1:
                 return True
             
-        elif operation=="LT":
-            if operand1<operand2:
+        elif operation=="LT" and operand1<operand2:
                 return True
                     
-        elif operation=="GT":
-            if operand1>operand2:
+        elif operation=="GT" and operand1>operand2:
                 return True
                     
-        elif operation=="LTE":
-            if operand1<=operand2:
+        elif operation=="LTE" and operand1<=operand2:
                 return True
                     
-        elif operation=="GTE":
-            if operand1>=operand2:
+        elif operation=="GTE" and operand1>=operand2:
                 return True
                 
     def filter(self,query):
         filter_store=Store()
         for item in self.store:
-            if query.field=="category":
-                if self.output(query._operation,item._category,query._value):
+            if query.field=="category" and self.output(query._operation,item._category,query._value):
                     filter_store.add_item(item)
                             
-            elif query.field=="price":
-                if self.output(query._operation,item._price,query._value):
+            elif query.field=="price" and self.output(query._operation,item._price,query._value):
                     filter_store.add_item(item)
                             
-            elif query.field=="name":
-                if self.output(query._operation,item._name,query._value):
+            elif query.field=="name" and self.output(query._operation,item._name,query._value):
                     filter_store.add_item(item)
                     
         return filter_store
                 
     def exclude(self,query):
         exclude_store=Store()
-        things='\n'.join(map(str,self.filter(query).store))
-        sub_store=things.split('\n') 
-        total_store=map(str,self.store)
-        for item in total_store:
-            if not item in sub_store:
+        for item in self.store:
+            if not item in self.filter(query).store:
                 exclude_store.add_item(item)
             
         return exclude_store
         
     def count(self):
         return len(self.store)
-      
