@@ -63,6 +63,9 @@ class Store:
     
     @staticmethod
     def output(operation,operand1,operand2):
+        from operator import lt,gt,le,ge
+        operation_dict={"LT":lt,"LTE":le,"GT":gt,"GTE":ge}
+        
         if operation == "IN" or operation=="EQ":
             if not isinstance(operand2,list):
                 operand2=[operand2]
@@ -73,18 +76,9 @@ class Store:
         elif operation=="STARTS_WITH" or operation=="ENDS_WITH" or operation=="CONTAINS" :
             if operand2 in operand1:
                 return True
-            
-        elif operation=="LT" and operand1<operand2:
-            return True
-                    
-        elif operation=="GT" and operand1>operand2:
-            return True
-                    
-        elif operation=="LTE" and operand1<=operand2:
-            return True
-                    
-        elif operation=="GTE" and operand1>=operand2:
-            return True
+        else:
+            if operation_dict[operation](operand1,operand2):
+                return True
                 
     def intersection(self,argv,query_type):
         values=[]
@@ -122,10 +116,8 @@ class Store:
                         filter_store.add_item(item)
                         
                 return filter_store
-            
-        else:
-            
-            return self.intersection(argv,"filter_query")
+                
+        return self.intersection(argv,"filter_query")
             
     def __add__(self,other):
         filter_1={'\n'.join(map(str,self.store))}
@@ -147,10 +139,8 @@ class Store:
                         exclude_store.add_item(item)
                     
                 return exclude_store
-            
-        else:
-            return self.intersection(argv,"exclude_query")
+    
+        return self.intersection(argv,"exclude_query")
         
     def count(self):
         return len(self.store)
-      
