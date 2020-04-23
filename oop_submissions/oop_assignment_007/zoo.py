@@ -9,7 +9,7 @@ class Deer:
             raise ValueError(f'Invalid value for field required_food_in_kgs: {required_food_in_kgs}')
         self._required_food_in_kgs=required_food_in_kgs
             
-        if age_in_months>1:
+        if not age_in_months==1:
             raise ValueError(f'Invalid value for field age_in_months: {age_in_months}')
         self._age_in_months=age_in_months
         self._breed=breed
