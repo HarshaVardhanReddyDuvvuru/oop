@@ -57,15 +57,14 @@ class Store:
         self.store.append(item)
 
     def __str__(self):
-        things='\n'.join(map(str,self.store))
-        if len(things)==0:
+        if len(self.store)==0:
             return('No items')
-        return things
+        return '\n'.join(map(str,self.store))
     
     @staticmethod
     def output(operation,operand1,operand2):
         from operator import lt,gt,le,ge
-        operation_dict={"LT":lt,"LTE":le,"GT":gt,"GTE":ge}
+        operation_dict={"LT":lt,"LTE":le,"GT":gt,"GTE":ge}   
         
         if operation == "IN" or operation=="EQ":
             if not isinstance(operand2,list):

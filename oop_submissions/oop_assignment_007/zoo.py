@@ -111,7 +111,6 @@ class Zoo:
         count=0
         for zoo in zoos:
             count+=zoo.count_animals()
-        
         return count
         
 

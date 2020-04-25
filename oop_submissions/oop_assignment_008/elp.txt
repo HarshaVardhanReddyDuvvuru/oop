@@ -1,0 +1,68 @@
+Classes:
+Animal
+LandAnimals
+WaterAnimals
+HuntingAnimals
+
+1.Deer
+2.Lion
+3.Shark
+4.GoldFIsh
+5.Snake
+6.Zoo
+Animal:
+    Attributes:
+    	age_in_months	                -protected  -instance 
+    	required_food_in_kgs	        -protected  -instance
+    	breed	                        -protected  -instance
+    	increase_age_in_months          -protected  -class
+    	increase_required_food_in_kgs   -protected  -class
+    	animal_sound                    -protected  -class
+    
+    Methods:
+    	grow	        -pubilc -instance
+    	make_sound	    -pubilc -class
+    	
+LandAnimals:
+    Methods:
+        breathe     -public -class
+        
+
+WaterAnimals:
+    Methods:
+        breathe     -public -class
+        
+HuntingAnimals:
+    Attributes:
+        prey   -protected    -class
+    
+    Methods:
+        hunt        -public     -class
+    
+
+1.Deer   -inherits from Animal,LandAnimals
+    
+2.Lion   -inherits from Animal,LandAnimals,HuntingAnimals
+
+3.Shark   -inherits from Animal,WaterAnimals,HuntingAnimals
+    	
+    	
+4.GoldFish  -inherits from Animal,WaterAnimals
+
+5.Snake    -inherits from Animal,LandAnimals,HuntingAnimals
+    	
+    	
+6.Zoo
+    Attributes:
+	    reserved_food_in_kgs		-protected  -instance
+	    animal_list                 -protected  -instance
+	    total_animals_in_all_zoos   -protected  -class               
+	
+    Methods:
+        add_food_to_reserve	        -public	    -instance
+    	add_animal	                -public     -instance
+    	count_animals		        -public     -intstance
+    	feed	                    -public     -instance
+    	count_animals_in_all_zoos	-public     -class
+    	count_animals_in_given_zoos	-public     -static
+

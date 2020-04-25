@@ -1,0 +1,32 @@
+Classes:
+Item
+Query
+Store
+
+Item:
+    Attributes:
+        name        -protected  - instance
+        price       -protected  -instance
+        category    -protected  -instance
+    
+    methods:
+        __str__     -public      -instance
+    
+Query:
+    Attributes:
+        field       -protected  -instance   
+        Value       -protected  -instance
+        operation   -protected  -instance
+        
+    Methods:
+        __str__     -public      -instance
+        
+Store:
+    Attributes:
+        Item_list   -protected  -instance
+        
+    Methods:
+        add_item    -public      -instance
+        filter      -public      -instance
+        exclude     -public      -instance
+    
