@@ -1,6 +1,6 @@
 class Pokemon:
     
-    sound=""
+    _sound=""
     
     def __init__(self,name="",level=1):
         if len(name)==0:
@@ -9,10 +9,7 @@ class Pokemon:
         if level<=0:
             raise ValueError('level should be > 0')
         self._level=level
-        self._master=""
-        
-    def __str__(self):
-        return f'{self._name} - Level {self._level}'
+        self._master=None
         
     @property
     def name(self):
@@ -24,130 +21,106 @@ class Pokemon:
     
     @property
     def master(self):
-        if self._master=="":
+        if self._master==None:
             print("No Master")
             return
         return self._master
         
+    def __str__(self):
+        return f'{self._name} - Level {self._level}'
+        
     @classmethod
     def make_sound(cls):
-        print(cls.sound)
+        print(cls._sound)
+        
+    def new_master(self,master):
+        self._master=master
     
             
-class ElectricPokemon:
-    
-    def __init__(self):
-        self._current_level=0
-    
+class ElectricPokemon(Pokemon):
     def attack(self):
-        print(f'Electric attack with {self._current_level*10} damage')
+        print(f'Electric attack with {self._level*10} damage')
+   
         
-class WaterPokemon:
+class WaterPokemon(Pokemon):
     
     _pokemon_name=""
-    
-    def __init__(self):
-        self._current_level=0
+    def attack(self):
+        print(f'Water attack with {self._level*9} damage')
     
     @classmethod
     def swim(cls):
         print(f'{cls._pokemon_name} swimming...')
-    
-    def attack(self):
-        print(f'Water attack with {self._current_level*9} damage')
-    
 
-class FlyingPokemon:
+    
+class FlyingPokemon(Pokemon):
     
     _pokemon_name=""
-    
-    def __init__(self):
-        self._current_level=0
+
+    def attack(self):
+        print(f'Air attack with {self._level*5} damage')
     
     @classmethod
     def fly(cls):
         print(f'{cls._pokemon_name} flying...')
+
+
+class RunningPokemon:
     
-    def attack(self):
-        print(f'Air attack with {self._current_level*5} damage')
+    _pokemon_name=""
     
-    
-class Pikachu(Pokemon,ElectricPokemon):
-    
-    sound="Pika Pika"
-    
-    def __init__(self,name="",level=1):
-        super().__init__(name=name,level=level)
-        self._current_level=self._level
-        
-    @classmethod
-    def make_sound(cls):
-        print(cls.sound)
-        
     @classmethod
     def run(cls):
-        print("Pikachu running...")
-        
-class Squirtle(Pokemon,WaterPokemon):
+        print(f"{cls._pokemon_name} running...")  
     
-    sound="Squirtle...Squirtle"
+    
+class Pikachu(ElectricPokemon,RunningPokemon):
+    
+    _sound="Pika Pika"
+    _pokemon_name="Pikachu"
+    
+        
+class Squirtle(WaterPokemon,RunningPokemon):
+    
+    _sound="Squirtle...Squirtle"
     _pokemon_name="Squirtle"
     
-    def __init__(self,name="",level=1):
-        super().__init__(name=name,level=level)
-        self._current_level=self._level
-      
-    @classmethod
-    def run(cls):
-        print("Squirtle running...")  
     
-class Pidgey(Pokemon,FlyingPokemon):
+class Pidgey(FlyingPokemon):
     
-    sound="Pidgey...Pidgey"
+    _sound="Pidgey...Pidgey"
     _pokemon_name="Pidgey"
     
-    def __init__(self,name="",level=1):
-        super().__init__(name=name,level=level)
-        self._current_level=self._level
-        
 
-class Swanna(Pokemon,WaterPokemon,FlyingPokemon):
+class Swanna(WaterPokemon,FlyingPokemon):
     
-    sound="Swanna...Swanna"
+    _sound="Swanna...Swanna"
     _pokemon_name="Swanna"
     
-    def __init__(self,name="",level=1):
-        super().__init__(name=name,level=level)
-        self._current_level=self._level
-        
     def attack(self):
-        print(f'Water attack with {self._current_level*9} damage')
-        print(f'Air attack with {self._current_level*5} damage')
-        
-class Zapdos(Pokemon,ElectricPokemon,FlyingPokemon):
+        WaterPokemon.attack(self)
+        FlyingPokemon.attack(self)
     
-    sound="Zap...Zap"
+        
+class Zapdos(FlyingPokemon,ElectricPokemon):
+    
+    _sound="Zap...Zap"
     _pokemon_name="Zapdos"
-    
-    def __init__(self,name="",level=1):
-        super().__init__(name=name,level=level)
-        self._current_level=self._level
-        
     def attack(self):
-        print(f'Electric attack with {self._current_level*10} damage')
-        print(f'Air attack with {self._current_level*5} damage')
-        
-
+        ElectricPokemon.attack(self)
+        FlyingPokemon.attack(self)
+    
+    
 class Island:
     
-    all_islands_list=[]
+    _islands_list=[]
     
     def __init__(self,name,max_no_of_pokemon,total_food_available_in_kgs):
         self._name=name
         self._max_no_of_pokemon=max_no_of_pokemon
         self._total_food_available_in_kgs=total_food_available_in_kgs
         self._pokemon_left_to_catch=0
-        Island.all_islands_list.append(self)
+        Island._islands_list.append(self)
         
     @property
     def name(self):
@@ -174,15 +147,13 @@ class Island:
             self._pokemon_left_to_catch+=1
             return
         print("Island at its max pokemon capacity")
-    
-    @classmethod    
+     
+    @classmethod   
     def get_all_islands(cls):
-        for island in cls.all_islands_list:
-            print(str(island))
+        return cls._islands_list
+
 
 class Trainer:
-    
-    _pokemon_treasure=[]
     
     def __init__(self,name):
         self._name=name
@@ -190,6 +161,7 @@ class Trainer:
         self._max_food_in_bag=10*self._experience
         self._food_in_bag=0
         self._current_island=""
+        self._pokemon_treasure=[]
     
     @property
     def name(self):
@@ -229,6 +201,7 @@ class Trainer:
             self._food_in_bag=self._max_food_in_bag
             self._current_island._total_food_available_in_kgs-=self._max_food_in_bag
             return
+        
         self._food_in_bag=self._current_island._total_food_available_in_kgs
         self._current_island._total_food_available_in_kgs=0
 
@@ -237,13 +210,11 @@ class Trainer:
             print(f"You caught {pokemon._name}")
             self._experience+=(20*pokemon._level)
             self._pokemon_treasure.append(pokemon)
-            pokemon._master=self
+            pokemon.new_master(self)
             return
         
-        print("You need more experience to catch Pigetto")
-        
+        print(f"You need more experience to catch {pokemon.name}")
+      
     def get_my_pokemon(self):
-        for pokemon in self._pokemon_treasure:
-            print(pokemon)
-        
+        return self._pokemon_treasure
         
